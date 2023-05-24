@@ -1,7 +1,5 @@
 FROM ubuntu:22.04
 
-RUN echo "Europe/Paris" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
-
 RUN set -eux; \
   apt-get update; \
   apt-get install --yes --no-install-recommends --quiet \
