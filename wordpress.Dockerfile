@@ -2,19 +2,26 @@ FROM ubuntu:22.04
 
 RUN set -eux; \
   apt-get update; \
-  apt-get install --yes --no-install-recommends apache2;
+  apt-get install --yes --no-install-recommends --quiet apache2;
 
 RUN set -ex; \
-  apt-get install --yes --no-install-recommends mysql-server;
+  apt-get install --yes --no-install-recommends --quiet mariadb-server;
 
 # TODO - Add mysql_secure_installation script execution handling known issues
 # See - https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-22-04
 
 RUN set -ex; \
-  apt-get install --yes --no-install-recommends \
+  apt-get install --yes --no-install-recommends --quiet \
     php \
     libapache2-mod-php \
     php-mysql;
+
+RUN set -ex; \
+  systemctl enable mariadb \
+  && sytemctl enable apache2 \
+  && systemctl restart mariadb \
+  && systemctl restart apache2
+    
 
 VOLUME [/var/www/example.com]
 
