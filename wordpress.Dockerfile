@@ -2,7 +2,10 @@ FROM ubuntu:22.04
 
 RUN set -eux; \
   apt-get update; \
-  apt-get install --yes --no-install-recommends --quiet apache2;
+  apt-get install --yes --no-install-recommends --quiet \
+    apache2 \
+    libapache2-mod-php \
+    php;
 
 RUN set -ex; \
   apt-get install --yes --no-install-recommends --quiet mariadb-server;
@@ -12,9 +15,12 @@ RUN set -ex; \
 
 RUN set -ex; \
   apt-get install --yes --no-install-recommends --quiet \
-    php \
-    libapache2-mod-php \
-    php-mysql;
+    php-xmlrpc \
+    php-xml \
+    php-mysqli \
+    php-intl \
+    php-zip \
+    php-bz2;
 
 RUN set -ex; \
   systemctl enable mariadb \
