@@ -40,7 +40,8 @@ RUN set -ex; \
 VOLUME [/var/www/example.com]
 VOLUME [/var/log/apache2]
 
-RUN chown -R www-data:www-data /var/www/example.com
+
+RUN mkdir /var/www/example.com && chown -R www-data:www-data /var/www/example.com
 
 #RUN { \
 #  echo '<VirtualHost *:80>'; \
@@ -61,3 +62,5 @@ RUN chown -R www-data:www-data /var/www/example.com
 #  && a2dissite default-ssl \
 #  && apache2ctl configtest \
 #  && service apache2 restart
+
+CMD ["/usr/bin/apachectl", "-D", "FOREGROUND"]
