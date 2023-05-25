@@ -61,4 +61,4 @@ RUN mkdir /var/www/example.com && chown -R www-data:www-data /var/www/example.co
 #  && apache2ctl configtest \
 #  && service apache2 restart
 
-CMD ["/usr/bin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
