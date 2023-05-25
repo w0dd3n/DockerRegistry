@@ -1,42 +1,46 @@
 FROM ubuntu:22.04
-MAINTAINER cedric.obejero@tanooki.fr
+
+LABEL author="cedric;obejero@tanooki.fr"
+LABEL version="0.1"
+LABEL description="Image for training purpose only \
+			Image used to build customized service."
+LABEL expose.info="SSHD Service"
+EXPOSE 666/tcp
+
+LABEL expose.info="HTTPD Service"
+EXPOSE 443/tcp
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
-  apt-get update;
+	apt-get update;
 
 RUN set -ex; \
-  apt-get install --yes --no-install-recommends --quiet \
-    apache2 \
-    libapache2-mod-php \
-    php;
+	apt-get install --yes --no-install-recommends --quiet \
+    		apache2 \
+    		libapache2-mod-php \
+    		php;
 
-#RUN set -ex; \
-#  apt-get install --yes --no-install-recommends --quiet mariadb-server;
+RUN set -ex; \
+  	apt-get install --yes --no-install-recommends --quiet \
+		mariadb-server;
 
 # TODO - Add mysql_secure_installation script execution handling known issues
 # See - https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-22-04
 
-#RUN set -ex; \
-#  apt-get install --yes --no-install-recommends --quiet \
-#    php-xmlrpc \
-#    php-xml \
-#    php-mysqli \
-#    php-intl \
-#    php-zip \
-#    php-bz2;
+RUN set -ex; \
+	apt-get install --yes --no-install-recommends --quiet \
+		php-mbstring \
+		php-xml \
+ 		php-mysqli \
+ 		php-intl \
+		php-zip \
+    		php-bz2;
 
-#RUN set -ex; \
-#  systemctl enable mariadb \
-#  && sytemctl enable apache2 \
-#  && systemctl restart mariadb \
-#  && systemctl restart apache2
-    
+VOLUME [/var/www/example.com]
+VOLUME [/var/log/apache2]
 
-#VOLUME [/var/www/example.com]
-
-#RUN chown -R www-data:www-data /var/www/example.com
+RUN chown -R www-data:www-data /var/www/example.com
 
 #RUN { \
 #  echo '<VirtualHost *:80>'; \
@@ -56,4 +60,4 @@ RUN set -ex; \
 #  && a2dissite 000-default \
 #  && a2dissite default-ssl \
 #  && apache2ctl configtest \
-#  && systemctl restart apache2
+#  && service apache2 restart
