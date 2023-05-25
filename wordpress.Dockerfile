@@ -1,7 +1,12 @@
 FROM ubuntu:22.04
+MAINTAINER cedric.obejero@tanooki.fr
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
-  apt-get update; \
+  apt-get update;
+
+RUN set -ex; \
   apt-get install --yes --no-install-recommends --quiet \
     apache2 \
     libapache2-mod-php \
