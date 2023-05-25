@@ -37,9 +37,7 @@ RUN set -ex; \
 		php-zip \
     		php-bz2;
 
-VOLUME [/var/www/example.com]
-VOLUME [/var/log/apache2]
-
+VOLUME ["/var/www", "/var/log/apache2", "/etc/apache2", "/var/lib/mysql"]
 
 RUN mkdir /var/www/example.com && chown -R www-data:www-data /var/www/example.com
 
@@ -63,4 +61,4 @@ RUN mkdir /var/www/example.com && chown -R www-data:www-data /var/www/example.co
 #  && apache2ctl configtest \
 #  && service apache2 restart
 
-CMD ["/usr/bin/apachectl", "-D", "FOREGROUND"]
+CMD ["/usr/bin/apache2ctl", "-D", "FOREGROUND"]
