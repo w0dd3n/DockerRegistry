@@ -28,11 +28,16 @@ RUN set -ex; \
 # See - https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-22-04
 
 RUN set -ex; \
+	apt-get update; \
 	apt-get install --yes --no-install-recommends --quiet \
 		curl \
+		php-curl \
+		php-gd \
 		php-mbstring \
 		php-xml \
- 		php-mysqli \
+		php-xmlrpc \
+ 		php-mysql \
+		php-soap \
  		php-intl \
 		php-zip \
     		php-bz2;
@@ -61,11 +66,18 @@ RUN { \
   && a2ensite example.com \
   && a2dissite 000-default \
   && a2dissite default-ssl \
-  && apache2ctl configtest \
   && service apache2 restart
 
-RUN curl https://wordpress.org/latest.tar.gz | tar -zxf -C /var/www/html
-RUN chown -R www-data:www-data /var/www/html/wordpress
-RUN chmod -R 755 /var/www/html/wordpress
+RUN curl https://wordpress.org/latest.tar.gz | tar -zxf -C /var/www/example.com
+RUN chown -R www-data:www-data /var/www/example.com && chmod -R 755 /var/www/example.com
+RUN cp /var/www/example.com/wp-config-sample.php /var/www/example.com/wp-config.php
+RUN mkdir /var/www/example.com/wordpress/wp-content/upgrade
+RUN find /var/www/example.com -type d -exec chmod 750 {} \ && find /var/www/example.com -type d -exec chmod 750 {} \;
+RUN curl -s https://api.wordpress.org/secret-key/1.1/salt/ > /var/tmp/wp-api.txt
+RUN echo "## SECRET KEY RELEASE $(date --rfc-3339='seconds')" >> /var/tmp/wp-api.txt
+RUN cp /var/www/example.com/wp-config.php /var/www/example.com/wp-config.php.old
+COPY config.awk /var/tmp
+RUN awk -f /var/tmp/config.awk /var/tmp/wp-api.txt /var/www/example.com/wp-config.php.old > /var/www/example.com/wp-config.php
+RUN rm /var/tmp/config.awk; rm /var/tmp/wp-api.txt
 
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
