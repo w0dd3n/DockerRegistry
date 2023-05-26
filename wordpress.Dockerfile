@@ -4,13 +4,12 @@ LABEL author="cedric;obejero@tanooki.fr"
 LABEL version="0.1"
 LABEL description="Image for training purpose only \
 			Image used to build customized service."
-LABEL expose.info="SSHD Service"
-EXPOSE 666/tcp
 
-LABEL expose.info="HTTPD Service"
-EXPOSE 443/tcp
+EXPOSE 666/tcp
+EXPOSE 80/tcp 443/tcp
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
 
 RUN set -eux; \
 	apt-get update;
@@ -30,6 +29,7 @@ RUN set -ex; \
 
 RUN set -ex; \
 	apt-get install --yes --no-install-recommends --quiet \
+		curl \
 		php-mbstring \
 		php-xml \
  		php-mysqli \
@@ -37,28 +37,35 @@ RUN set -ex; \
 		php-zip \
     		php-bz2;
 
+RUN set -ex; \
+	apt-get clean
+
 VOLUME ["/var/www", "/var/log/apache2", "/etc/apache2", "/var/lib/mysql"]
 
 RUN mkdir /var/www/example.com && chown -R www-data:www-data /var/www/example.com
 
-#RUN { \
-#  echo '<VirtualHost *:80>'; \
-#  echo '  ServerName example.com'; \
-#  echo '  ServerAlias www.example.com'; \
-#  echo '  ServerAdmin webmaster@example.com'; \
-#  echo '  DocumentRoot /var/www/example.com'; \
-#  echo '  ErrorLog /var/log/apache2/error.log'; \
-#  echo '  CustomLog /var/log/apache2/access.log combined'; \
-#  echo '  <Directory /var/www/example.com/>'; \
-#  echo '    AllowOverride All'; \
-#  echo '  </Directory>'; \
-#  echo '</VirtualHost>'; \
-#  } | tee /etc/apache2/sites-available/example.com.conf \
-#  && a2enmod rewrite \
-#  && a2ensite example.com \
-#  && a2dissite 000-default \
-#  && a2dissite default-ssl \
-#  && apache2ctl configtest \
-#  && service apache2 restart
+RUN { \
+  echo '<VirtualHost *:80>'; \
+  echo '  ServerName example.com'; \
+  echo '  ServerAlias www.example.com'; \
+  echo '  ServerAdmin webmaster@example.com'; \
+  echo '  DocumentRoot /var/www/example.com'; \
+  echo '  ErrorLog /var/log/apache2/error.log'; \
+  echo '  CustomLog /var/log/apache2/access.log combined'; \
+  echo '  <Directory /var/www/example.com/>'; \
+  echo '    AllowOverride All'; \
+  echo '  </Directory>'; \
+  echo '</VirtualHost>'; \
+  } | tee /etc/apache2/sites-available/example.com.conf \
+  && a2enmod rewrite \
+  && a2ensite example.com \
+  && a2dissite 000-default \
+  && a2dissite default-ssl \
+  && apache2ctl configtest \
+  && service apache2 restart
+
+RUN curl https://wordpress.org/latest.tar.gz | tar -zxf -C /var/www/html
+RUN chown -R www-data:www-data /var/www/html/wordpress
+RUN chmod -R 755 /var/www/html/wordpress
 
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
