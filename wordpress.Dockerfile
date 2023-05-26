@@ -66,9 +66,9 @@ RUN { \
   && a2ensite example.com \
   && a2dissite 000-default \
   && a2dissite default-ssl \
-  && service apache2 restart
+  && service apache2 restart;
 
-RUN curl https://wordpress.org/latest.tar.gz | tar -zxf -C /var/www/example.com
+RUN curl -s https://wordpress.org/latest.tar.gz | tar zx -C /var/www/example.com
 RUN chown -R www-data:www-data /var/www/example.com && chmod -R 755 /var/www/example.com
 RUN cp /var/www/example.com/wp-config-sample.php /var/www/example.com/wp-config.php
 RUN mkdir /var/www/example.com/wordpress/wp-content/upgrade
