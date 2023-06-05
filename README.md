@@ -2,4 +2,4 @@
 
 The current repo is providing various Dockerfile of customized images provided without warranty
 
-ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMVOEPo3+NJUulVq3pP6CGBa0x4CPCCCFGVC2D05/vp/jZhnG9haLGEUirgQTKWtAX7gHtH8Fu+gn6BhjWmXWk4= pvuillaume@formation
+
